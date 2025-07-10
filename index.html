@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalender Bali API - Dokumentasi Lengkap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react-syntax-highlighter@15/dist/umd/react-syntax-highlighter.min.js"></script>
+    <script src="https://unpkg.com/react-syntax-highlighter@15/dist/umd/languages/hljs/javascript.min.js"></script>
+    <script src="https://unpkg.com/react-syntax-highlighter@15/dist/umd/languages/hljs/python.min.js"></script>
+    <script src="https://unpkg.com/react-syntax-highlighter@15/dist/umd/languages/hljs/bash.min.js"></script>
+    <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        pre { white-space: pre-wrap; }
+        .mermaid { text-align: center; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { Prism } = window.ReactSyntaxHighlighter;
+        const { darcula } = window.ReactSyntaxHighlighterStyles;
+
+        // Navigasi
+        const Navbar = () => (
+            <nav className="bg-blue-800 text-white py-4 px-6 sticky top-0 shadow-md z-10">
+                <div className="container mx-auto flex justify-between items-center">
+                    <h1 className="text-xl font-bold">Kalender Bali API</h1>
+                    <ul className="flex space-x-6">
+                        <li><a href="#home" className="hover:underline">Home</a></li>
+                        <li><a href="#endpoints" className="hover:underline">Endpoints</a></li>
+                        <li><a href="#technical" className="hover:underline">Teknis</a></li>
+                        <li><a href="#faq" className="hover:underline">FAQ</a></li>
+                        <li><a href="#contribute" className="hover:underline">Kontribusi</a></li>
+                    </ul>
+                </div>
+            </nav>
+        );
+
+        // Hero Section
+        const Hero = () => (
+            <section id="home" className="bg-blue-600 text-white py-20 text-center">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-4xl font-bold mb-4">Dokumentasi Kalender Bali API</h2>
+                    <p className="text-lg mb-6">Konversi tanggal Masehi ke kalender Bali dengan mudah dan akurat.</p>
+                    <a href="#endpoints" className="bg-white text-blue-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100">Lihat Endpoint</a>
+                </div>
+            </section>
+        );
+
+        // Endpoints Section
+        const Endpoint = ({ title, method, path, description, parameters, exampleRequest, exampleResponse, codeSamples }) => {
+            const [activeTab, setActiveTab] = useState(Object.keys(codeSamples)[0]);
+            return (
+                <div className="mb-8 p-6 bg-white rounded-lg shadow-md">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-2">{method} {path}</h3>
+                    <p className="text-gray-700 mb-4">{description}</p>
+                    {parameters && (
+                        <div className="mb-4">
+                            <h4 className="text-lg font-medium text-gray-800">Parameter:</h4>
+                            <ul className="list-disc list-inside text-gray-700">
+                                {parameters.map(param => <li key={param.name}>{param.name}: {param.description}</li>)}
+                            </ul>
+                        </div>
+                    )}
+                    <div className="mb-4">
+                        <h4 className="text-lg font-medium text-gray-800">Contoh Permintaan:</h4>
+                        <Prism language="bash" style={darcula} className="rounded">{exampleRequest}</Prism>
+                    </div>
+                    <div className="mb-4">
+                        <h4 className="text-lg font-medium text-gray-800">Contoh Respons:</h4>
+                        <Prism language="javascript" style={darcula} className="rounded">{exampleResponse}</Prism>
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-medium text-gray-800 mb-2">Kode Sampel:</h4>
+                        <div className="flex space-x-4 mb-4">
+                            {Object.keys(codeSamples).map(lang => (
+                                <button
+                                    key={lang}
+                                    className={`px-4 py-2 rounded ${activeTab === lang ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+                                    onClick={() => setActiveTab(lang)}
+                                >
+                                    {lang}
+                                </button>
+                            ))}
+                        </div>
+                        <Prism language={activeTab.toLowerCase()} style={darcula} className="rounded">{codeSamples[activeTab]}</Prism>
+                    </div>
+                </div>
+            );
+        };
+
+        const Endpoints = () => {
+            const endpoints = [
+                {
+                    title: "Kalender Hari Ini",
+                    method: "GET",
+                    path: "/api/bali-calendar/today",
+                    description: "Mengembalikan informasi kalender Bali untuk hari ini berdasarkan zona waktu WITA (UTC+8).",
+                    exampleRequest: `curl https://kalender-bali-api.vercel.app/api/bali-calendar/today`,
+                    exampleResponse: JSON.stringify({
+                        gregorianDate: "2025-07-10",
+                        sakaYear: 1947,
+                        sasih: "Kapat",
+                        wuku: "Menail",
+                        pancawara: "Kliwon",
+                        saptawara: "Wraspati",
+                        triwara: "Beteng",
+                        lintang: "Pepe",
+                        pararasan: "Laku Bulan",
+                        ingkel: "Mina",
+                        importantDays: ["Purnama Kapat"],
+                        requiresLocalValidation: [],
+                        isFullMoon: true,
+                        isNewMoon: false
+                    }, null, 2),
+                    codeSamples: {
+                        cURL: `curl https://kalender-bali-api.vercel.app/api/bali-calendar/today`,
+                        JavaScript: `fetch('https://kalender-bali-api.vercel.app/api/bali-calendar/today')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));`,
+                        Python: `import requests
+response = requests.get('https://kalender-bali-api.vercel.app/api/bali-calendar/today')
+if response.status_code == 200:
+    print(response.json())
+else:
+    print('Error:', response.status_code)`
+                    }
+                },
+                {
+                    title: "Kalender untuk Tanggal Tertentu",
+                    method: "GET",
+                    path: "/api/bali-calendar/:date",
+                    description: "Mengembalikan informasi kalender Bali untuk tanggal tertentu dalam format YYYY-MM-DD.",
+                    parameters: [{ name: "date", description: "Tanggal dalam format YYYY-MM-DD (contoh: 2025-07-10)" }],
+                    exampleRequest: `curl https://kalender-bali-api.vercel.app/api/bali-calendar/2025-07-10`,
+                    exampleResponse: JSON.stringify({
+                        gregorianDate: "2025-07-10",
+                        sakaYear: 1947,
+                        sasih: "Kapat",
+                        wuku: "Menail",
+                        pancawara: "Kliwon",
+                        saptawara: "Wraspati",
+                        triwara: "Beteng",
+                        lintang: "Pepe",
+                        pararasan: "Laku Bulan",
+                        ingkel: "Mina",
+                        importantDays: ["Purnama Kapat"],
+                        requiresLocalValidation: [],
+                        isFullMoon: true,
+                        isNewMoon: false
+                    }, null, 2),
+                    codeSamples: {
+                        cURL: `curl https://kalender-bali-api.vercel.app/api/bali-calendar/2025-07-10`,
+                        JavaScript: `fetch('https://kalender-bali-api.vercel.app/api/bali-calendar/2025-07-10')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));`,
+                        Python: `import requests
+response = requests.get('https://kalender-bali-api.vercel.app/api/bali-calendar/2025-07-10')
+if response.status_code == 200:
+    print(response.json())
+else:
+    print('Error:', response.status_code)`
+                    }
+                },
+                {
+                    title: "Galungan dan Kuningan",
+                    method: "GET",
+                    path: "/api/galungan-kuningan/:year",
+                    description: "Mengembalikan daftar tanggal Galungan dan Kuningan dalam tahun tertentu.",
+                    parameters: [{ name: "year", description: "Tahun dalam format YYYY (contoh: 2025)" }],
+                    exampleRequest: `curl https://kalender-bali-api.vercel.app/api/galungan-kuningan/2025`,
+                    exampleResponse: JSON.stringify([
+                        { date: "2025-02-05", event: "Galungan", baliDate: { gregorianDate: "2025-02-05", /* ... */ } },
+                        { date: "2025-02-15", event: "Kuningan", baliDate: { gregorianDate: "2025-02-15", /* ... */ } }
+                    ], null, 2),
+                    codeSamples: {
+                        cURL: `curl https://kalender-bali-api.vercel.app/api/galungan-kuningan/2025`,
+                        JavaScript: `fetch('https://kalender-bali-api.vercel.app/api/galungan-kuningan/2025')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));`,
+                        Python: `import requests
+response = requests.get('https://kalender-bali-api.vercel.app/api/galungan-kuningan/2025')
+if response.status_code == 200:
+    print(response.json())
+else:
+    print('Error:', response.status_code)`
+                    }
+                },
+                {
+                    title: "Rentang Kalender",
+                    method: "GET",
+                    path: "/api/bali-calendar/range/:startDate/:endDate",
+                    description: "Mengembalikan informasi kalender Bali untuk rentang tanggal tertentu.",
+                    parameters: [
+                        { name: "startDate", description: "Tanggal mulai (YYYY-MM-DD)" },
+                        { name: "endDate", description: "Tanggal akhir (YYYY-MM-DD)" }
+                    ],
+                    exampleRequest: `curl https://kalender-bali-api.vercel.app/api/bali-calendar/range/2025-07-01/2025-07-10`,
+                    exampleResponse: JSON.stringify([{ gregorianDate: "2025-07-01", /* ... */ }], null, 2),
+                    codeSamples: {
+                        cURL: `curl https://kalender-bali-api.vercel.app/api/bali-calendar/range/2025-07-01/2025-07-10`,
+                        JavaScript: `fetch('https://kalender-bali-api.vercel.app/api/bali-calendar/range/2025-07-01/2025-07-10')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));`,
+                        Python: `import requests
+response = requests.get('https://kalender-bali-api.vercel.app/api/bali-calendar/range/2025-07-01/2025-07-10')
+if response.status_code == 200:
+    print(response.json())
+else:
+    print('Error:', response.status_code)`
+                    }
+                },
+                {
+                    title: "Hari Penting",
+                    method: "GET",
+                    path: "/api/important-days/:year/:month",
+                    description: "Mengembalikan daftar hari penting dalam bulan tertentu.",
+                    parameters: [
+                        { name: "year", description: "Tahun (YYYY)" },
+                        { name: "month", description: "Bulan (1-12)" }
+                    ],
+                    exampleRequest: `curl https://kalender-bali-api.vercel.app/api/important-days/2025/7`,
+                    exampleResponse: JSON.stringify([{ gregorianDate: "2025-07-10", importantDays: ["Purnama Kapat"], /* ... */ }], null, 2),
+                    codeSamples: {
+                        cURL: `curl https://kalender-bali-api.vercel.app/api/important-days/2025/7`,
+                        JavaScript: `fetch('https://kalender-bali-api.vercel.app/api/important-days/2025/7')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));`,
+                        Python: `import requests
+response = requests.get('https://kalender-bali-api.vercel.app/api/important-days/2025/7')
+if response.status_code == 200:
+    print(response.json())
+else:
+    print('Error:', response.status_code)`
+                    }
+                },
+                {
+                    title: "Hari Baik (Dewasa Ayu)",
+                    method: "GET",
+                    path: "/api/dewasa-ayu/:year/:month",
+                    description: "Mengembalikan daftar hari baik (Dewasa Ayu) dalam bulan tertentu.",
+                    parameters: [
+                        { name: "year", description: "Tahun (YYYY)" },
+                        { name: "month", description: "Bulan (1-12)" }
+                    ],
+                    exampleRequest: `curl https://kalender-bali-api.vercel.app/api/dewasa-ayu/2025/7`,
+                    exampleResponse: JSON.stringify([{
+                        date: "2025-07-01",
+                        auspiciousDays: ["Soma Pon (Hari Baik untuk Usaha)"],
+                        requiresLocalValidation: ["Soma Pon (Hari Baik untuk Usaha)"],
+                        baliDate: { /* ... */ }
+                    }], null, 2),
+                    codeSamples: {
+                        cURL: `curl https://kalender-bali-api.vercel.app/api/dewasa-ayu/2025/7`,
+                        JavaScript: `fetch('https://kalender-bali-api.vercel.app/api/dewasa-ayu/2025/7')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));`,
+                        Python: `import requests
+response = requests.get('https://kalender-bali-api.vercel.app/api/dewasa-ayu/2025/7')
+if response.status_code == 200:
+    print(response.json())
+else:
+    print('Error:', response.status_code)`
+                    }
+                },
+                {
+                    title: "Informasi API",
+                    method: "GET",
+                    path: "/api/info",
+                    description: "Mengembalikan informasi tentang API, termasuk fitur, dependensi, dan catatan.",
+                    exampleRequest: `curl https://kalender-bali-api.vercel.app/api/info`,
+                    exampleResponse: JSON.stringify({
+                        description: "API Kalender Bali untuk konversi tanggal Masehi ke sistem kalender Bali",
+                        features: [/* ... */],
+                        dependencies: ["astronomy-engine"],
+                        notes: [/* ... */]
+                    }, null, 2),
+                    codeSamples: {
+                        cURL: `curl https://kalender-bali-api.vercel.app/api/info`,
+                        JavaScript: `fetch('https://kalender-bali-api.vercel.app/api/info')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));`,
+                        Python: `import requests
+response = requests.get('https://kalender-bali-api.vercel.app/api/info')
+if response.status_code == 200:
+    print(response.json())
+else:
+    print('Error:', response.status_code)`
+                    }
+                }
+            ];
+
+            return (
+                <section id="endpoints" className="container mx-auto px-4 py-12">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-8">Endpoint API</h2>
+                    {endpoints.map((endpoint, index) => (
+                        <Endpoint key={index} {...endpoint} />
+                    ))}
+                </section>
+            );
+        };
+
+        // Interactive Tester
+        const ApiTester = () => {
+            const [endpoint, setEndpoint] = useState('/api/bali-calendar/today');
+            const [params, setParams] = useState('');
+            const [response, setResponse] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleTest = async () => {
+                setLoading(true);
+                setError('');
+                setResponse('');
+                try {
+                    const url = `https://kalender-bali-api.vercel.app${endpoint}${params ? `/${params}` : ''}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    setResponse(JSON.stringify(data, null, 2));
+                } catch (err) {
+                    setError(`Error: ${err.message}`);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <section className="container mx-auto px-4 py-12 bg-white rounded-lg shadow-md">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-6">Coba API</h2>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-2">Pilih Endpoint:</label>
+                            <select
+                                value={endpoint}
+                                onChange={e => setEndpoint(e.target.value)}
+                                className="w-full p-2 border rounded"
+                            >
+                                <option value="/api/bali-calendar/today">/api/bali-calendar/today</option>
+                                <option value="/api/bali-calendar">/api/bali-calendar/:date</option>
+                                <option value="/api/galungan-kuningan">/api/galungan-kuningan/:year</option>
+                                <option value="/api/bali-calendar/range">/api/bali-calendar/range/:startDate/:endDate</option>
+                                <option value="/api/important-days">/api/important-days/:year/:month</option>
+                                <option value="/api/dewasa-ayu">/api/dewasa-ayu/:year/:month</option>
+                                <option value="/api/info">/api/info</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-2">Parameter (opsional):</label>
+                            <input
+                                type="text"
+                                value={params}
+                                onChange={e => setParams(e.target.value)}
+                                placeholder="Contoh: 2025-07-10 atau 2025/7"
+                                className="w-full p-2 border rounded"
+                            />
+                        </div>
+                        <button
+                            onClick={handleTest}
+                            disabled={loading}
+                            className={`px-6 py-2 rounded text-white ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+                        >
+                            {loading ? 'Memuat...' : 'Uji API'}
+                        </button>
+                        {response && (
+                            <div className="mt-4">
+                                <h4 className="text-lg font-medium text-gray-800">Respons:</h4>
+                                <Prism language="javascript" style={darcula} className="rounded">{response}</Prism>
+                            </div>
+                        )}
+                        {error && <p className="text-red-600 mt-4">{error}</p>}
+                    </div>
+                </section>
+            );
+        };
+
+        // Technical Section
+        const Technical = () => {
+            useEffect(() => {
+                mermaid.initialize({ startOnLoad: true });
+            }, []);
+
+            return (
+                <section id="technical" className="container mx-auto px-4 py-12">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-8">Penjelasan Teknis</h2>
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Algoritma Perhitungan Wuku</h3>
+                        <p className="text-gray-700 mb-4">
+                            Wuku dihitung berdasarkan siklus 30 minggu, dimulai dari referensi 1 Januari 2000 (Wuku Sinta). Algoritma:
+                        </p>
+                        <div className="mermaid">
+                            graph TD
+                                A[Input Tanggal] --> B[Hitung selisih hari dari 1 Jan 2000]
+                                B --&gt; C[Modulo 30 untuk indeks wuku]
+                                C --&gt; D[Pilih wuku dari array WUKU]
+                        </div>
+                        <Prism language="javascript" style={darcula} className="rounded mt-4">
+                            {`getWuku(date) {
+    const days = this.getDaysDifference(date);
+    const wukuIndex = (REFERENCE_WUKU + days) % 30;
+    return WUKU[wukuIndex < 0 ? wukuIndex + 30 : wukuIndex];
+}`}
+                        </Prism>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Fase Bulan</h3>
+                        <p className="text-gray-700 mb-4">
+                            Fase bulan untuk Purnama dan Tilem dihitung menggunakan <code>astronomy-engine</code> dengan threshold 0.98 untuk Purnama dan 0.02 untuk Tilem.
+                        </p>
+                        <Prism language="javascript" style={darcula} className="rounded">
+                            {`isFullMoon(date) {
+    const illum = astronomy.Illumination('Moon', date);
+    return illum.phase_fraction >= 0.98;
+}`}
+                        </Prism>
+                    </div>
+                </section>
+            );
+        };
+
+        // FAQ Section
+        const FAQ = () => (
+            <section id="faq" className="container mx-auto px-4 py-12">
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">Pertanyaan Umum</h2>
+                <div className="space-y-4">
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-medium text-gray-800">Apa zona waktu untuk /today?</h3>
+                        <p className="text-gray-700">Endpoint /api/bali-calendar/today menggunakan WITA (UTC+8).</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-medium text-gray-800">Apakah hari baik selalu akurat?</h3>
+                        <p className="text-gray-700">Hari baik (Dewasa Ayu) memerlukan validasi lokal karena variasi antar daerah di Bali.</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-medium text-gray-800">Bagaimana cara menangani error?</h3>
+                        <p className="text-gray-700">Periksa format parameter dan status respons (400 untuk input salah, 500 untuk error server).</p>
+                    </div>
+                </div>
+            </section>
+        );
+
+        // Contribute Section
+        const Contribute = () => (
+            <section id="contribute" className="container mx-auto px-4 py-12">
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">Kontribusi</h2>
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <p className="text-gray-700 mb-4">
+                        Ingin berkontribusi? Fork repositori di GitHub, buat pull request dengan perubahan Anda, atau laporkan isu.
+                    </p>
+                    <a href="https://github.com/<username>/KalenderBaliAPI" className="text-blue-600 hover:underline">Kunjungi Repositori GitHub</a>
+                </div>
+            </section>
+        );
+
+        // Footer
+        const Footer = () => (
+            <footer className="bg-gray-800 text-white py-6 text-center">
+                <p>© 2025 Kalender Bali API. Dibuat untuk pelestarian budaya Bali.</p>
+                <p className="mt-2">Kontak: <a href="mailto:support@kalenderbali.com" className="text-blue-400 hover:underline">support@kalenderbali.com</a></p>
+                <p>Lisensi: MIT</p>
+            </footer>
+        );
+
+        // Main App
+        const App = () => (
+            <div>
+                <Navbar />
+                <Hero />
+                <Endpoints />
+                <ApiTester />
+                <Technical />
+                <FAQ />
+                <Contribute />
+                <Footer />
+            </div>
+        );
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
